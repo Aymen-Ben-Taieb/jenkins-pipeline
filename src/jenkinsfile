@@ -1,5 +1,5 @@
 pipeline {
-    //agent {label 'local'}
+    agent any
 
     stages {
         stage('Clone Repository') {
@@ -11,67 +11,65 @@ pipeline {
             steps {
                 echo "Building the Maven project and Docker image"
                 sh '''
-                    mvn install 
-                    docker build -t myapp . 
-                    docker tag myapp aymenbentaieb/myapp:1.0.0
+                    docker build -t aymenbentaieb/myappfrontend:1.0.0 -f src/frontend/Dockerfile src/frontend
                 '''
                 script {
                     withCredentials([usernamePassword(credentialsId: 'dockerhub_id', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
                         sh "docker login --username=$USERNAME --password=$PASSWORD"
                     }
-                    sh "docker push aymenbentaieb/myapp:1.0.0"
+                    sh "docker push aymenbentaieb/myappfrontend:1.0.0"
                 }
                 
             }
         }
-        stage('SonarQube Analysis') {
-            steps {
-                script {
-                    withCredentials([string(credentialsId: 'sonar_id', variable: 'SECRET')]) { 
-                    env.SONAR_LOGIN = SECRET
-                }}
-                echo "Running SonarQube analysis" 
-                sh '''
-                    mvn clean install sonar:sonar \
-                    -Dsonar.login=${SONAR_LOGIN} \
-                    -Dsonar.host.url=http://localhost:9000 \
-                    -Dsonar.projectKey=backend \
-                    -Dsonar.projectName=backend \
-                    -Dsonar.verbose=true 
-                '''
-            }
-              }
+        // stage('SonarQube Analysis') {
+        //     steps {
+        //         script {
+        //             withCredentials([string(credentialsId: 'sonar_id', variable: 'SECRET')]) { 
+        //             env.SONAR_LOGIN = SECRET
+        //         }}
+        //         echo "Running SonarQube analysis" 
+        //         sh '''
+        //             mvn clean install sonar:sonar \
+        //             -Dsonar.login=${SONAR_LOGIN} \
+        //             -Dsonar.host.url=http://localhost:9000 \
+        //             -Dsonar.projectKey=backend \
+        //             -Dsonar.projectName=backend \
+        //             -Dsonar.verbose=true 
+        //         '''
+        //     }
+        //       }
 
-              stage('Junit Test') {
-                     steps {
-                         script {
-                                sh 'mvn test'
+        //       stage('Junit Test') {
+        //              steps {
+        //                  script {
+        //                         sh 'mvn test'
 
-                }
-            }
-        }      
+        //         }
+        //     }
+        // }      
 
-        stage('Publish to Nexus') {
-                     steps {
-                         script {
-                                sh 'mvn deploy -e -DskipTests'
-                                echo 'Publish to Nexus'
-                                }
+        // stage('Publish to Nexus') {
+        //              steps {
+        //                  script {
+        //                         sh 'mvn deploy -e -DskipTests'
+        //                         echo 'Publish to Nexus'
+        //                         }
                                 
                 
 
-            }
-        }
-        stage('Docker Compose') {
-                     steps {
-                         script {
-                                sh 'docker compose up -d'
-                                sh 'docker ps -aq | xargs docker start'
-                }
-            }
-        } 
+        //     }
+        // }
+        // stage('Docker Compose') {
+        //              steps {
+        //                  script {
+        //                         sh 'docker compose up -d'
+        //                         sh 'docker ps -aq | xargs docker start'
+        //         }
+        //     }
+        // } 
 
-               }
+   }
     //            post {
     // // only triggered when blue or green sign
     // success {
