@@ -1,11 +1,11 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: backend
+  name: backendaymen
 spec:
   selector:
     matchLabels:
-      app: backend
+      app: backendaymen
   replicas: 1
   # strategy:
   #   type: RollingUpdate
@@ -15,17 +15,16 @@ spec:
   template:
     metadata:
       labels:
-        app: backend
+        app: backendaymen
     spec:
       containers:
-        - name: backend
+        - name: backendaymen
           image: aymenbentaieb/myappbackend:1.0.0
-          # image: crudappcontainerregistry.azurecr.io/backend:production
           ports:
             - containerPort: 3700
           env:
             - name: MONGO_URI
-              value: mongodb://mongodb:27017/crud-users-db
+              value: mongodb://mongodbaymen:27017/crud-users-db
             - name: PORT
               value: "3700"
           imagePullPolicy: Always
@@ -33,10 +32,10 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: backend
+  name: backendaymen 
 spec:
   selector:
-    app: backend
+    app: backendaymen
   ports:
     - protocol: TCP
       port: 3700

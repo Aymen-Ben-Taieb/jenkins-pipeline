@@ -1,10 +1,10 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: mongodb
+  name: mongodbaymen
 spec:
   selector:
-    app: mongodb
+    app: mongodbaymen
   ports:
     - protocol: TCP
       port: 27017
@@ -13,35 +13,34 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: mongodb
+  name: mongodbaymen
 spec:
   selector:
     matchLabels:
-      app: mongodb
+      app: mongodbaymen
   replicas: 1
   template:
     metadata:
       labels:
-        app: mongodb
+        app: mongodbaymen
     spec:
       containers:
-        - name: mongodb
+        - name: mongodbaymen
           image: mongo:6-jammy
           env:
             - name: MONGO_INITDB_DATABASE
               value: crud-users-db
           volumeMounts:
             - mountPath: /data/db
-              name: mongo-data
+              name: mongo-data-aymen
       volumes:
-        - name: mongo-data
-          emptyDir: {}
+        - name: mongo-data-aymen
 
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: mongo-data
+  name: mongo-data-aymen
 spec:
   accessModes:
     - ReadWriteOnce
@@ -52,7 +51,7 @@ spec:
 apiVersion: v1
 kind: PersistentVolume
 metadata:
-  name: mongo-data
+  name: mongo-data-aymen
 spec:
   capacity:
     storage: 1Gi
@@ -61,4 +60,3 @@ spec:
   persistentVolumeReclaimPolicy: Retain
   hostPath:
     path: /tmp/mongo-data
-
