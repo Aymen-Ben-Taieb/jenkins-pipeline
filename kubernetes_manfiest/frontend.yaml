@@ -32,7 +32,7 @@ spec:
     spec:
       containers:
         - name: frontend
-          image: chamseddinedocker/crudappfrontend:latest
+          image: aymenbentaieb/myappfrontend:1.0.0
           # image: crudappcontainerregistry.azurecr.io/frontend:production
           ports:
             - containerPort: 3000

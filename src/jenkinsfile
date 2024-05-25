@@ -1,10 +1,19 @@
 pipeline {
     agent any
 
+    environment {
+        PROJECT_ID = 'mentorship-419620'
+        CLUSTER_NAME = 'gmc'
+        CLUSTER_REGION = 'us-central1-a'
+        // SERVICE_ACCOUNT_KEY = credentials('gcp_service_account')
+        SERVICE_ACCOUNT_KEY = credentials('gcp_key')
+    }
+
     stages {
-        stage('Clone Repository') {
-            steps {
-                echo "Cloning repository"
+        stage('Clone'){
+            steps{
+                git branch: 'main', url: 'https://github.com/Aymen-Ben-Taieb/jenkins-pipeline.git'
+        
             }
         }
         stage('*Build*') {
