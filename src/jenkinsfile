@@ -34,61 +34,34 @@ pipeline {
                 
             }
         }
-        // stage('SonarQube Analysis') {
-        //     steps {
-        //         script {
-        //             withCredentials([string(credentialsId: 'sonar_id', variable: 'SECRET')]) { 
-        //             env.SONAR_LOGIN = SECRET
-        //         }}
-        //         echo "Running SonarQube analysis" 
-        //         sh '''
-        //             mvn clean install sonar:sonar \
-        //             -Dsonar.login=${SONAR_LOGIN} \
-        //             -Dsonar.host.url=http://localhost:9000 \
-        //             -Dsonar.projectKey=backend \
-        //             -Dsonar.projectName=backend \
-        //             -Dsonar.verbose=true 
-        //         '''
-        //     }
-        //       }
+    steps {
+                script {
+                    git branch: 'main', url: 'https://github.com/Aymen-Ben-Taieb/jenkins-pipeline.git'
+                    sh '''
+                    echo ${SERVICE_ACCOUNT_KEY} | base64 -d > xx.json
+                    export CLOUDSDK_CONFIG=${CLOUDSDK_CONFIG}
+                    gcloud auth activate-service-account --key-file=xx.json
+                    gcloud config set account $(gcloud auth list --filter=status:ACTIVE --format='value(account)')
+                    gcloud config set project ${PROJECT_ID}
+                    gcloud container clusters get-credentials ${CLUSTER_NAME} --region ${CLUSTER_REGION}
+                    
+                    
+                    
+                    '''
+                    sh '''
+                    KUBECONFIG=/root/.kube/config kubectl apply -f kubernetes_manfiest/ --namespace aymen
+                    kubectl wait --for=condition=ready pod -l app: backend
+                    kubectl get svc 
+                    '''
+                }
+            }
+        }
+    }
 
-        //       stage('Junit Test') {
-        //              steps {
-        //                  script {
-        //                         sh 'mvn test'
-
-        //         }
-        //     }
-        // }      
-
-        // stage('Publish to Nexus') {
-        //              steps {
-        //                  script {
-        //                         sh 'mvn deploy -e -DskipTests'
-        //                         echo 'Publish to Nexus'
-        //                         }
-                                
-                
-
-        //     }
-        // }
-        // stage('Docker Compose') {
-        //              steps {
-        //                  script {
-        //                         sh 'docker compose up -d'
-        //                         sh 'docker ps -aq | xargs docker start'
-        //         }
-        //     }
-        // } 
-
-   }
-    //            post {
-    // // only triggered when blue or green sign
-    // success {
-    //     slackSend(channel: 'devops', color: 'good', message: ":white_check_mark: Build number ${BUILD_NUMBER} ended with SUCCESS aymen")
-    // }
-    // // triggered when red sign
-    // failure {
-    //     slackSend(channel: 'devops', color: 'RED', message: ":red_circle:  Build number ${BUILD_NUMBER} FAILED aymen") }
-    // }
+    post {
+        always {
+            // Clean up the workspace after the build
+            cleanWs()
+        }
+    }
 }
