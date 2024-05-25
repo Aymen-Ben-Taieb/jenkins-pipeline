@@ -61,7 +61,7 @@ pipeline {
                     retry(3) {
                         // Retry up to 3 times
                         sh '''
-                        PUBLIC_IP=$(kubectl get svc frontendaymen -o=jsonpath='{.status.loadBalancer.ingress[0].ip}')
+                        PUBLIC_IP=$(kubectl get -n aymen svc frontendaymen -o=jsonpath='{.status.loadBalancer.ingress[0].ip}')
                         if [ -z "$PUBLIC_IP" ]; then
                             echo "Public IP not ready, retrying..."
                             exit 1
