@@ -34,7 +34,14 @@ pipeline {
                 
             }
         }
-    steps {
+        stage('Deploy to GKE') {
+            agent { 
+                docker { 
+                    image 'gcloud:1.0' 
+                    args '-u root'
+                } 
+            }
+             steps {
                 script {
                     git branch: 'main', url: 'https://github.com/Aymen-Ben-Taieb/jenkins-pipeline.git'
                     sh '''
