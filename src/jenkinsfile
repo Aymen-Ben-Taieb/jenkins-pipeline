@@ -57,8 +57,8 @@ pipeline {
                     '''
                     sh '''
                     KUBECONFIG=/root/.kube/config kubectl apply -f kubernetes_manfiest/ --namespace aymen
-                    kubectl wait --for=condition=ready pod -l app: backend
-                    kubectl get svc 
+                    kubectl wait --for=condition=ready pod -l app: backend -n aymen
+                    kubectl get svc  aymen
                     '''
                 }
             }
