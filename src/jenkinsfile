@@ -21,12 +21,15 @@ pipeline {
                 echo "Building the Maven project and Docker image"
                 sh '''
                     docker build -t aymenbentaieb/myappfrontend:1.0.0 -f src/frontend/Dockerfile src/frontend
+                    docker build -t aymenbentaieb/myappbackend:1.0.0 -f src/backend/Dockerfile src/backend
                 '''
                 script {
                     withCredentials([usernamePassword(credentialsId: 'dockerhub_id', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
                         sh "docker login --username=$USERNAME --password=$PASSWORD"
                     }
                     sh "docker push aymenbentaieb/myappfrontend:1.0.0"
+                    sh "docker push aymenbentaieb/myappbackend:1.0.0"
+
                 }
                 
             }
